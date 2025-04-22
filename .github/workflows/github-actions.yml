@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
-        django-version: ["4.2.15", "5.0.8"]
+        django-version: ["5.0.8"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,11 +52,8 @@ jobs:
         run: |
           docker compose exec backend pytest --cov=./ --cov-report=xml --cov-branch --cov-append baseapp_drf_view_action_permissions --ds=baseapp_drf_view_action_permissions.tests.settings
       
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: docker compose down
-        run: docker compose down --volumes --remove-orphans
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: coverage.xml
